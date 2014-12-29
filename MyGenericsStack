@@ -144,7 +144,7 @@ public class MyGenericsStack <T>
 	}
 	
 	public static void main(String a[]) {
-		String expr = "(((91+87887878] +(2-3))*2)";
+		String expr = "(({91+345} +(2-3))*2)";
 		System.out.println("Expression: " + expr);
 		System.out.println("Final Result: " + evaluateInfix(expr));
 	}
