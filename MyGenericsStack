@@ -1,0 +1,151 @@
+package com.kamal;
+
+import java.util.StringTokenizer;
+
+public class MyGenericsStack <T>
+{
+	private int size;
+	private T[] stack;
+	private int top;
+	
+	@SuppressWarnings("unchecked")
+	public MyGenericsStack(int size)
+	{
+		this.size = size;
+		this.stack = (T[]) new String[size];
+		this.top = -1;
+	}
+	
+	public void push(T element)
+	{
+		if (this.isStackFull())
+		{
+			this.increaseSize();
+		}
+		this.stack[++top] = element;
+	}
+	
+	public T pop() throws Exception
+	{
+		if (this.isStackEmpty())
+		{
+			throw new Exception("Stack is empty. Can not remove element.");
+		}
+		T element = this.stack[top--];
+		return element;
+	}
+
+	public T peek()
+	{
+		return stack[top];
+	}
+
+	@SuppressWarnings("unchecked")
+	private void increaseSize()
+	{
+		T[] newStack = (T[]) new Object[this.size * 2];
+		for (int i = 0; i < size; i++)
+		{
+			newStack[i] = this.stack[i];
+		}
+		this.stack = newStack;
+		this.size = this.size * 2;
+	}
+
+	public boolean isStackEmpty()
+	{
+		return (top == -1);
+	}
+
+	public boolean isStackFull()
+	{
+		return (top == size - 1);
+	}
+	
+	public static String evaluateInfix(String expression)
+	{
+		MyGenericsStack<String> stack = new MyGenericsStack<String>(expression.length());
+		StringTokenizer tokens = new StringTokenizer(expression, "{}()[]*/+-", true);
+		while (tokens.hasMoreTokens())
+		{
+			String token = tokens.nextToken();
+			if (token.equals("(") || token.equals("{") || token.equals("[") || token.matches("[0-9]+") || token.equals("*") || token.equals("/") || token.equals("+") || token.equals("-"))
+			{
+				stack.push(token);
+			}
+			else if (token.equals("}") || token.equals(")") || token.equals("]"))
+			{
+				try
+				{
+					int op2 = Integer.parseInt(stack.pop());
+					String oprnd = stack.pop();
+					int op1 = Integer.parseInt(stack.pop());
+					if (!stack.isStackEmpty())
+					{
+						String openBr = stack.pop();
+						if(token.equals("}"))
+						{
+							if(!openBr.equals("{"))
+							{
+								throw new Exception("Expression is not valid.");
+							}
+						}
+						if(token.equals(")"))
+						{
+							if(!openBr.equals("("))
+							{
+								throw new Exception("Expression is not valid.");
+							}
+						}
+						if(token.equals("]"))
+						{
+							if(!openBr.equals("["))
+							{
+								throw new Exception("Expression is not valid.");
+							}
+						}
+					}
+					int result = 0;
+					if (oprnd.equals("*"))
+					{
+						result = op1 * op2;
+					}
+					else if (oprnd.equals("/"))
+					{
+						result = op1 / op2;
+					}
+					else if (oprnd.equals("+"))
+					{
+						result = op1 + op2;
+					}
+					else if (oprnd.equals("-"))
+					{
+						result = op1 - op2;
+					}
+					stack.push(result + "");
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
+		String finalResult = "";
+		try
+		{
+			finalResult = stack.pop();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return finalResult;
+	}
+	
+	public static void main(String a[]) {
+		String expr = "(((91+87887878] +(2-3))*2)";
+		System.out.println("Expression: " + expr);
+		System.out.println("Final Result: " + evaluateInfix(expr));
+	}
+}
